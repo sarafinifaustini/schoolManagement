@@ -54,5 +54,6 @@ class SectionsSeeder extends Seeder
         ];
 
         Section::insert($sections);
+        dd($sections);
     }
 }

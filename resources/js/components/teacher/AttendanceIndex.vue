@@ -1,5 +1,11 @@
 <template>
+
     <div>
+         <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Attendance sheet </h3>
+                </div>
+            </div>
         <div class="d-flex justify-content-between align-content-center mb-2">
             <div class="d-flex">
                 <div>
@@ -53,7 +59,7 @@
                                 :key="section.id"
                                 :value="section.id"
                             >
-                                {{ section.name }}
+                                {{ section.name}}
                             </option>
                         </select>
                     </div>
@@ -97,14 +103,14 @@
         </div>
 
         <div class="col-md-10 mb-2" v-if="selectPage">
-            <div v-if="selectAll || students.meta.total == checked.length">
+            <div v-if="selectAll || teachers.meta.total == checked.length">
                 You are currently selecting all
                 <strong>{{ checked.length }}</strong> items.
             </div>
             <div v-else>
                 You have selected <strong>{{ checked.length }}</strong> items,
                 Do you want to Select All
-                <strong>{{ students.meta.total }}</strong
+                <strong>{{ teachers.meta.total }}</strong
                 >?
                 <a @click.prevent="selectAllRecords" href="#" class="ml-2"
                     >Select All</a
@@ -117,9 +123,9 @@
                 <tbody>
                     <tr>
                         <th><input type="checkbox" v-model="selectPage" /></th>
-                        <th>
+                        <!-- <th>
                             <a href="#" @click.prevent="change_sort('name')"
-                                >Student's Name</a
+                                >Teacher's Name</a
                             >
                             <span
                                 v-if="
@@ -135,7 +141,7 @@
                                 "
                                 >&darr;</span
                             >
-                        </th>
+                        </th> -->
                         <th>
                             <a href="#" @click.prevent="change_sort('email')"
                                 >Email</a
@@ -155,7 +161,7 @@
                                 >&darr;</span
                             >
                         </th>
-                        <th>
+                        <!-- <th>
                             <a href="#" @click.prevent="change_sort('parentName')"
                                 >Parent's Name </a
                             >
@@ -173,49 +179,29 @@
                                 "
                                 >&darr;</span
                             >
-                        </th>
+                        </th> -->
                         <th>
                             <a
                                 href="#"
-                                @click.prevent="change_sort('phoneNumber')"
-                                >Phone Number</a
+                                @click.prevent="change_sort('subject')"
+                                >Subject</a
                             >
                             <span
                                 v-if="
                                     sort_direction == 'desc' &&
-                                        sort_field == 'phoneNumber'
+                                        sort_field == 'subject'
                                 "
                                 >&uarr;</span
                             >
                             <span
                                 v-if="
                                     sort_direction == 'asc' &&
-                                        sort_field == 'phoneNumber'
+                                        sort_field == 'subject'
                                 "
                                 >&darr;</span
                             >
                         </th>
-                          <th>
-                            <a
-                                href="#"
-                                @click.prevent="change_sort('yearJoined')"
-                                >YearJoined</a
-                            >
-                            <span
-                                v-if="
-                                    sort_direction == 'desc' &&
-                                        sort_field == 'yearJoined'
-                                "
-                                >&uarr;</span
-                            >
-                            <span
-                                v-if="
-                                    sort_direction == 'asc' &&
-                                        sort_field == 'yearJoined'
-                                "
-                                >&darr;</span
-                            >
-                        </th>
+
                         <th>
                             <a
                                 href="#"
@@ -240,37 +226,47 @@
 
                         <th>Class</th>
                         <th>Section</th>
-                        <th>Action</th>
+                        <th>Mark Present</th>
+                        <th>Mark Absent</th>
                     </tr>
 
                     <tr
-                        v-for="student in students.data"
-                        :key="student.id"
-                        :class="isChecked(student.id) ? 'table-primary' : ''"
+                        v-for="teacher in teachers.data"
+                        :key="teacher.id"
+                        :class="isChecked(teacher.id) ? 'table-primary' : ''"
                     >
                         <td>
                             <input
                                 type="checkbox"
-                                :value="student.id"
+                                :value="teacher.id"
                                 v-model="checked"
                             />
                         </td>
-                        <td>{{ student.name }}</td>
-                        <td>{{ student.email }}</td>
-                        <td>{{ student.parentName }}</td>
-                        <td>{{ student.phoneNumber }}</td>
-                         <td>{{ student.yearJoined }}</td>
-                         <td>{{student.created_at}}</td>
-                          <!-- <td>{{ student.yob }}</td> -->
-                        <td>{{ student.class_id}}</td>
-                        <td>{{ student.section_id }}</td>
+                        <!-- <td>{{ teacher.name }}</td> -->
+                        <td>{{ teacher.email }}</td>
+                        <!-- <td>{{ teacher.parentName }}</td> -->
+                        <td>{{ teacher.subject }}</td>
+                         <!-- <td>{{ teacher.yearJoined }}</td> -->
+                         <td>{{teacher.created_at}}</td>
+                          <!-- <td>{{ teacher.yob }}</td> -->
+                        <td>{{ teacher.class}}</td>
+                        <td>{{ teacher.section}}</td>
                         <td>
                             <button
                                 onclick="confirm('Are you sure you wanna delete this Record?') || event.stopImmediatePropagation()"
-                                class="btn btn-danger btn-sm"
-                                @click="deleteSingleRecord(student.id)"
+                                class="btn btn-primary btn-sm"
+                                @click="deleteSingleRecord(teacher.id)"
                             >
-                                <i class="fa fa-trash" aria-hidden="true"></i>
+                               <i class="fas fa-times" aria-hidden="true"></i>
+                            </button>
+                        </td>
+                        <td>
+                            <button
+                                onclick="confirm('Are you sure you wanna delete this Record?') || event.stopImmediatePropagation()"
+                                class="btn btn-success btn-sm"
+                                @click="deleteSingleRecord(teacher.id)"
+                            >
+                                <i class="fa fa-check-double" aria-hidden="true"></i>
                             </button>
                         </td>
                     </tr>
@@ -280,8 +276,8 @@
         <div class="row mt-4">
             <div class="col-sm-6 offset-5">
                 <pagination
-                    :data="students"
-                    @pagination-change-page="getStudents"
+                    :data="teachers"
+                    @pagination-change-page="getTeachers"
                 ></pagination>
             </div>
         </div>
@@ -292,7 +288,7 @@
 export default {
     data() {
         return {
-            students: {},
+            teachers: {},
             paginate: 10,
             search: "",
             classes: {},
@@ -305,17 +301,17 @@ export default {
             sort_direction: "desc",
             sort_field: "created_at",
             url: "",
-            getStudentsUrl: "",
-            getStudentsUrlWithoutPaginate: ""
+            getTeachersUrl: "",
+            getTeachersUrlWithoutPaginate: ""
         };
     },
 
     watch: {
         paginate: function(value) {
-            this.getStudents();
+            this.getTeachers();
         },
         search: function(value) {
-            this.getStudents();
+            this.getTeachers();
         },
         selectedClass: function(value) {
             this.selectedSection = "";
@@ -324,16 +320,16 @@ export default {
                 .then(response => {
                     this.sections = response.data.data;
                 });
-            this.getStudents();
+            this.getTeachers();
         },
         selectedSection: function(value) {
-            this.getStudents();
+            this.getTeachers();
         },
         selectPage: function(value) {
             this.checked = [];
             if (value) {
-                this.students.data.forEach(student => {
-                    this.checked.push(student.id);
+                this.teachers.data.forEach(teacher => {
+                    this.checked.push(teacher.id);
                 });
             } else {
                 this.checked = [];
@@ -341,17 +337,17 @@ export default {
             }
         },
         checked: function(value) {
-            this.url = "/api/students/export/" + this.checked;
+            this.url = "/api/teachers/export/" + this.checked;
         }
     },
 
     methods: {
         selectAllRecords() {
-            axios.get(this.getStudentsUrlWithoutPaginate).then(response => {
+            axios.get(this.getTeachersUrlWithoutPaginate).then(response => {
                 // console.log(response.data);
                 this.checked = [];
-                response.data.data.forEach(student => {
-                    this.checked.push(student.id);
+                response.data.data.forEach(teacher => {
+                    this.checked.push(teacher.id);
                 });
                 this.selectAll = true;
             });
@@ -363,34 +359,34 @@ export default {
             } else {
                 this.sort_field = field;
             }
-            this.getStudents();
+            this.getTeachers();
         },
-        deleteSingleRecord(student_id) {
-            axios.delete("/api/student/delete/" + student_id).then(response => {
-                this.checked = this.checked.filter(id => id != student_id);
-                this.$toast.success("Student Deleted Successfully");
-                this.getStudents();
+        deleteSingleRecord(teacher_id) {
+            axios.delete("/api/teachers/delete/" + teacher_id).then(response => {
+                this.checked = this.checked.filter(id => id != teacher_id);
+                this.$toast.success("Teacher Deleted Successfully");
+                this.getTeachers();
             });
         },
         deleteRecords() {
             axios
-                .delete("/api/students/massDestroy/" + this.checked)
+                .delete("/api/teachers/massDestroy/" + this.checked)
                 .then(response => {
                     if (response.status == 204) {
                         this.$toast.success(
-                            "Selected Students were Deleted Successfully"
+                            "Selected Teachers were Deleted Successfully"
                         );
                         this.checked = [];
-                        this.getStudents();
+                        this.getTeachers();
                     }
                 });
         },
-        isChecked(student_id) {
-            return this.checked.includes(student_id);
+        isChecked(teacher_id) {
+            return this.checked.includes(teacher_id);
         },
-        getStudents(page = 1) {
-            this.getStudentsUrlWithoutPaginate =
-                "/api/students?" +
+        getTeachers(page = 1) {
+            this.getTeachersUrlWithoutPaginate =
+                "/api/teachers?" +
                 "q=" +
                 this.search +
                 "&sort_direction=" +
@@ -402,11 +398,11 @@ export default {
                 "&selectedSection=" +
                 this.selectedSection;
 
-            this.getStudentsUrl = this.getStudentsUrlWithoutPaginate.concat(
+            this.getTeachersUrl = this.getTeachersUrlWithoutPaginate.concat(
                 "&paginate=" + this.paginate + "&page=" + page
             );
-            axios.get(this.getStudentsUrl).then(response => {
-                this.students = response.data;
+            axios.get(this.getTeachersUrl).then(response => {
+                this.teachers = response.data;
             });
         }
     },
@@ -415,7 +411,7 @@ export default {
         axios.get("/api/classes").then(response => {
             this.classes = response.data.data;
         });
-        this.getStudents();
+        this.getTeachers();
     }
 };
 </script>

@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\User;
 
 use App\Models\User;
+use App\Models\Classes;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Resources\TeacherResource;
 
 class UserController extends Controller
 {
@@ -16,42 +19,98 @@ class UserController extends Controller
     //     return view('dashboard.user.home',['users'=>$users]);
     // }
      public function index(){
-         $paginate =request('paginate',10);
-         $search_term = request('q','');
-         $students = User::with(['class', 'section'])->search(trim($search_term))->paginate($paginate);
-        return UserResource::collection($students);
-
+         $paginate =request('paginate');
+        if(isset($paginate)){
+            $users = User::studentsQuery()->paginate($paginate);
+        }else{
+            $users=User::studentsQuery()->get();
+        }
+        return UserResource::collection($users);
     }
+    // public function getAttendance(){
+    // //     $classes = Classes::getAll();
+    // // $sections = Classes::getAll();
+    // $t= Teacher::All();
+    // $teachers = TeacherResource::collection($t);
+
+    //  return view('dashboard.user.home',['teachers'=>$teachers]);
+
+    // }
    public function create(Request $request){
-        dd($request);
+
         $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'parentName' => 'required',
-            'phoneNumber' => 'required|digits:10',
+            'phoneNumber' => 'required',
             'yob'=>'required',
             'yearJoined'=>'required',
-            'section_id' => 'required',
-            'class_id' =>'required',
-            'password' => 'required|password|min:5|max:30',
-            'cpassword'=>'required|min:5|max:30|same:password',
+            'section_id' => '1',
+            'class_id' =>'2',
+            'password' => 'required|confirmed',
+            // 'cpassword'=>'required|min:5|max:30|same:password',
         ]);
+
         $user = new User();
-        $user->name = $user->name;
-        $user->email= $user->email;
-        $user->parentName= $user->parentName;
-        $user->phoneNumber= $user->phoneNumber;
-        $user->yob= $user->yob;
-        $user->yearJoined= $user->yearJoined;
-        $user->section_id= $user->section_id;
-        $user->class_id= $user->class_id;
+        $user->name = $request->name;
+        $user->email= $request->email;
+        $user->parentName= $request->parentName;
+        $user->phoneNumber= $request->phoneNumber;
+        $user->yob=$request->yob;
+        $user->yearJoined= $request->yearJoined;
+         $user->section_id= '2';
+        $user->class_id= '1';
         $user->password = \Hash::make($request->password);
         $save = $user->save();
         if($save) {
-            return redirect()->back()->with('Success','Registered Successflly');
+
+            return redirect()->route('user.login')->with('Success','Registered Successflly');
         }else
         return redirect()->back()->with('Something Went Wrong','Failed to Register');
 
+    }
+    public function addUser(Request $request){
+    $request->validate([
+           'name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'parentName' => 'required',
+            'phoneNumber' => 'required',
+            'yob'=>'required',
+            'yearJoined'=>'required',
+            'section_id' => '1',
+            'class_id' =>'2',
+            'password' => 'required|confirmed',
+            // 'cpassword'=>'required|min:5|max:30|same:password',
+        ]);
+
+        $user = new User();
+        $user->name = $request->name;
+        $user->email= $request->email;
+        $user->parentName= $request->parentName;
+        $user->phoneNumber= $request->phoneNumber;
+        $user->yob=$request->yob;
+        $user->yearJoined= $request->yearJoined;
+         $user->section_id= '2';
+        $user->class_id='1';
+        $user->password = \Hash::make($request->password);
+        $save = $user->save();
+        //  dd($user);
+        if($save) {
+
+            return redirect()->route('admin.home')->with('Success','Student Added Successflly');
+        }else
+        return redirect()->back()->with('Something Went Wrong','Failed to Register');
+
+    }
+
+
+    public function show(){
+        $u =User::All();
+        $students = UserResource::collection($u);
+        $t= Teacher::All();
+        $teachers = TeacherResource::collection($t);
+
+     return view('dashboard.user.home',compact('students','teachers'));
     }
     function check(Request $request){
         //Validate inputs
@@ -72,65 +131,27 @@ class UserController extends Controller
 
     function logout(){
         Auth::guard('web')->logout();
-        return redirect('/');
+        return redirect('user.login');
     }
-
-     public function class()
+      public function destroy(User $student)
     {
-        return $this->belongsTo(Classes::class, 'class_id');
+        $student->delete();
+        // return back();
+        return response()->noContent();
     }
 
-    public function section()
+    public function massDestroy($students)
     {
-        return $this->belongsTo(Section::class);
+        $studentsArray = explode(',', $students);
+        User::whereKey($studentsArray)->delete();
+        return back();
+        // return response()->noContent();
     }
 
-    public function scopeSearch($query, $term)
-    {
-        $term = "%$term%";
-
-        $query->where(function ($query) use ($term) {
-            $query->where('name', 'like', $term)
-                ->orWhere('email', 'like', $term)
-                ->orWhere('address', 'like', $term)
-                ->orWhere('phone_number', 'like', $term)
-                ->orWhereHas('class', function ($query) use ($term) {
-                    $query->where('name', 'like', $term);
-                })
-                ->orWhereHas('section', function ($query) use ($term) {
-                    $query->where('name', 'like', $term);
-                });
-        });
-    }
-
-    public function scopeStudentsQuery($query)
-    {
-        $search_term = request('q', '');
-
-        $selectedClass = request('selectedClass');
-        $selectedSection = request('selectedSection');
-
-        $sort_direction = request('sort_direction', 'desc');
-
-        if (!in_array($sort_direction, ['asc', 'desc'])) {
-            $sort_direction = 'desc';
-        }
-
-        $sort_field = request('sort_field', 'created_at');
-        if (!in_array($sort_field, ['name', 'email', 'address', 'phone_number', 'created_at'])) {
-            $sort_field = 'created_at';
-        }
-
-        $query->with(['class', 'section'])
-            ->when($selectedClass, function ($query) use ($selectedClass) {
-                $query->where('class_id', $selectedClass);
-            })
-            ->when($selectedSection, function ($query) use ($selectedSection) {
-                $query->where('section_id', $selectedSection);
-            })
-            ->orderBy($sort_field, $sort_direction)
-            ->search(trim($search_term));
-    }
+    // public function export($students)
+    // {
+    //     $studentsArray = explode(',', $students);
+    //     return (new StudentsExport($studentsArray))->download('students.xlsx');
+    // }
 
 }
-

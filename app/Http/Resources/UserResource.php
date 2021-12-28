@@ -22,8 +22,9 @@ class UserResource extends JsonResource
             'email'=>$this->email,
             'yearJoined'=>$this->yearJoined,
             'yob'=>$this->yob,
-            'section_id'=>$this->section_id,
-            'class_id'=>$this->class_id,
+            'age'=>date_diff(date_create($this->yob), date_create('now'))->y,
+            'section'=>$this->section->name,
+            'class'=>$this->class->name,
             'created_at'=>$this->created_at->toFormattedDateString(),
                ];
     }

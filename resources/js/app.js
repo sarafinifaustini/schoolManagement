@@ -5,9 +5,16 @@
  */
 
 require('./bootstrap');
-
+// import "fullcalendar/dist/fullcalendar.css";
+import FullCalendar from 'vue-full-calendar';
 window.Vue = require('vue').default;
-
+Vue.use(FullCalendar);
+// import FullCalendar from "@fullcalendar/vue";
+// import dayGridPlugin from "@fullcalendar/daygrid";
+// import timeGridPlugin from "@fullcalendar/timegrid";
+// import ListPlugin from "@fullcalendar/list";
+// import interactionPlugin from "@fullcalendar/interaction";
+// Vue.use(FullCalendar, dayGridPlugin, timeGridPlugin, interactionPlugin, ListPlugin);
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -20,10 +27,18 @@ window.Vue = require('vue').default;
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
-Vue.component('students-index', require('./components/students/StudentsIndex.vue').default);
-
+Vue.component(
+    "agenda-index",
+    require("./components/admin/AgendaIndex.vue").default
+);
+Vue.component('students-index', require('./components/admin/StudentsIndex.vue').default);
+Vue.component('teacher-index', require('./components/admin/TeacherIndex.vue').default);
+Vue.component('attendance-index', require('./components/teacher/AttendanceIndex.vue').default);
 Vue.component('pagination', require('laravel-vue-pagination'));
+/**
 
+/**
+/**
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

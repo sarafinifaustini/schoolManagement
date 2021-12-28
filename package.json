@@ -12,6 +12,7 @@
     "devDependencies": {
         "@popperjs/core": "^2.10.2",
         "@tailwindcss/ui": "^0.3",
+        "@vue/devtools": "^5.3.4",
         "autoprefixer": "^9.6",
         "axios": "^0.21",
         "bootstrap": "^5.1.3",
@@ -41,7 +42,15 @@
     "license": "ISC",
     "dependencies": {
         "@fortawesome/fontawesome-free": "^5.15.4",
+        "@fullcalendar/daygrid": "^5.10.1",
+        "@fullcalendar/interaction": "^5.10.1",
+        "@fullcalendar/list": "^5.10.1",
+        "@fullcalendar/timegrid": "^5.10.1",
+        "@fullcalendar/vue": "^5.10.1",
         "admin-lte": "^3.1.0",
-        "laravel-vue-pagination": "^2.3.1"
+        "laravel-vue-pagination": "^2.3.1",
+        "moment": "^2.29.1",
+        "vue-toast-notification": "^3.0.0",
+        "vuex": "^3.6.2"
     }
 }
